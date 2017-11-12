@@ -13,18 +13,28 @@ namespace SpaceShooter
         private Vector3 _starPosition;
 
         [SerializeField]
+        private float powerUpTimer = 0;
+
+        [SerializeField]
         protected int _lives;
         
         //boolean to start flashing
         protected bool _invicible;
         [SerializeField]
         protected float _flashSpeed = 0.1f;
+
+        public float PowerUpTimer
+        {
+            get { return Mathf.Round(powerUpTimer); }
+        }
+
                
         protected override void Awake()
         {
             base.Awake();
             _starPosition = transform.position;
             _lives = 3;
+            
         }
 
         public override Type UnitType
@@ -48,6 +58,16 @@ namespace SpaceShooter
 			{
 				Shoot();
 			}
+
+            if (powerUpTimer > 0)
+            {
+                powerUpTimer-= Time.deltaTime;
+                StartCoroutine(PowerUp(powerUpTimer));
+            }
+
+            if (powerUpTimer < 0)
+                powerUpTimer = 0;
+
 
         }
 
@@ -78,6 +98,11 @@ namespace SpaceShooter
             _lives -= 1;
         }
 
+        public void AddPowerUpTimer (float seconds)
+        {
+            powerUpTimer += seconds;
+        }
+
         IEnumerator Flash(float FlashSpeed)
         {
             //turns off collider for invincibility
@@ -94,5 +119,19 @@ namespace SpaceShooter
 
             _collider.enabled = true;
         }
+
+        IEnumerator PowerUp(float PowerUpTimer)
+        {
+            if (powerUpTimer > 0)
+            {
+                Weapons[1].setWeaponActive(true);
+                Weapons[2].setWeaponActive(true);
+                yield return new WaitForSeconds(powerUpTimer);
+            }
+            Weapons[1].setWeaponActive(false);
+            Weapons[2].setWeaponActive(false);
+        }
+
+
     }
 }

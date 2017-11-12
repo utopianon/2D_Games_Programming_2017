@@ -4,71 +4,98 @@ using UnityEngine;
 
 namespace SpaceShooter
 {
-	public class EnemySpaceShip : SpaceShipBase
-	{
-		[SerializeField]
-		private float _reachedDistance = 0.5f;
+    public class EnemySpaceShip : SpaceShipBase
+    {
+        [SerializeField]
+        private float _reachedDistance = 0.5f;
 
-		private GameObject[] _movementTargets;
-		private int _currentMovementTargetIndex = 0;
+        [SerializeField]
+        private GameObject _powerUpPrefab1;
 
-		public Transform CurrentMovementTarget
-		{
-			get
-			{
-				return _movementTargets[_currentMovementTargetIndex].transform;
-			}
-		}
+        [SerializeField]
+        private GameObject _powerUpPrefab2;
 
-		public override Type UnitType
-		{
-			get { return Type.Enemy; }
-		}
+        [SerializeField]
+        private int _dropChance;
 
-		protected override void Update()
-		{
-			base.Update();
+        private GameObject[] _movementTargets;
+        private int _currentMovementTargetIndex = 0;
 
-			Shoot();
-		}
+        public Transform CurrentMovementTarget
+        {
+            get
+            {
+                return _movementTargets[_currentMovementTargetIndex].transform;
+            }
+        }
 
-		public void SetMovementTargets(GameObject[] movementTargets)
-		{
-			_movementTargets = movementTargets;
-			_currentMovementTargetIndex = 0;
-		}
+        public override Type UnitType
+        {
+            get { return Type.Enemy; }
+        }
 
-		protected override void Move()
-		{
-			if(_movementTargets == null || _movementTargets.Length == 0)
-			{
-				return;
-			}
+        protected override void Update()
+        {
+            base.Update();
 
-			UpdateMovementTarget();
-			Vector3 direction =
-				(CurrentMovementTarget.position - transform.position).normalized;
-			transform.Translate(direction * Speed * Time.deltaTime);
-		}
+            Shoot();
+        }
 
-		private void UpdateMovementTarget()
-		{
-			// Have we reached our current movement target or not?
-			if( Vector3.Distance( transform.position,
-				CurrentMovementTarget.position ) < _reachedDistance )
-			{
-				// We have reached the target, let's update it.
-				if(_currentMovementTargetIndex >= _movementTargets.Length -1)
-				{
-					// we have reached the end of our path. Let's use the first target point
-					// as our next target.
-					_currentMovementTargetIndex = 0;
-				}
-				else
-				{
-					_currentMovementTargetIndex++;
-				}
-			}
-		}
-	}
+        public void SetMovementTargets(GameObject[] movementTargets)
+        {
+            _movementTargets = movementTargets;
+            _currentMovementTargetIndex = 0;
+        }
+
+        protected override void Move()
+        {
+            if (_movementTargets == null || _movementTargets.Length == 0)
+            {
+                return;
+            }
+
+            UpdateMovementTarget();
+            Vector3 direction =
+                (CurrentMovementTarget.position - transform.position).normalized;
+            transform.Translate(direction * Speed * Time.deltaTime);
+        }
+
+        private void UpdateMovementTarget()
+        {
+            // Have we reached our current movement target or not?
+            if (Vector3.Distance(transform.position,
+                CurrentMovementTarget.position) < _reachedDistance)
+            {
+                // We have reached the target, let's update it.
+                if (_currentMovementTargetIndex >= _movementTargets.Length - 1)
+                {
+                    // we have reached the end of our path. Let's use the first target point
+                    // as our next target.
+                    _currentMovementTargetIndex = 0;
+                }
+                else
+                {
+                    _currentMovementTargetIndex++;
+                }
+            }
+        }
+
+        private void OnDestroy()
+        {
+            int rand = Random.Range(0, 100);
+
+            if (rand <= _dropChance)
+            {
+                int powerUptoSpawn = Random.Range(0, 10);
+                if (powerUptoSpawn <= 6)
+                {
+                    Instantiate(_powerUpPrefab1, transform.position, transform.rotation);
+                }
+                else
+                {
+                    Instantiate(_powerUpPrefab2, transform.position, transform.rotation);
+                }
+            }
+        }
+    }
 }

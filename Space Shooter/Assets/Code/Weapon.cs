@@ -10,6 +10,8 @@ namespace SpaceShooter
 		private float _cooldownTime = 0.5f;
 		[SerializeField]
 		private Projectile _projectilePrefab;
+        [SerializeField]
+        private bool isActive;
 
 		private float _timeSinceShot = 0;
 		private bool _isInCooldown = false;
@@ -22,7 +24,7 @@ namespace SpaceShooter
 		
 		public bool Shoot()
 		{
-			if(_isInCooldown)
+			if(_isInCooldown || !isActive)
 			{
 				return false;
 			}
@@ -50,6 +52,13 @@ namespace SpaceShooter
 		{
 			return LevelContoller.Current.ReturnProjectile(_owner.UnitType, projectile);
 		}
+
+        public void setWeaponActive(bool on)
+        {
+            isActive = on;
+        }
+
+       
 		
 		void Update()
 		{

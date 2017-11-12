@@ -8,6 +8,7 @@ namespace SpaceShooter
 		[SerializeField] private int _minHealth;
 		[SerializeField] private int _maxHealth;
 
+        [SerializeField]
 		private int _currentHealth;
 
 		public int CurrentHealth
